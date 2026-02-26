@@ -1,22 +1,17 @@
 services:
   - type: web
     name: edumanage-sms
-    env: php
+    env: docker # Changed from php to docker
     plan: free
-    # Step 1: Install PHP deps, then Node deps, then build React
-    buildCommand: "composer install --no-dev && npm install && npm run build"
-    # Step 2: Run migrations on Neon and start Apache
-    startCommand: "php artisan migrate --force && apache2-foreground"
+    region: oregon
     envVars:
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_URL
-        value: postgresql://neondb_owner:npg_vx7COHzKsbw6@ep-floral-leaf-aiqqkfcy-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require
+        value: "postgresql://neondb_owner:npg_vx7COHzKsbw6@ep-floral-leaf-aiqqkfcy-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require"
       - key: APP_KEY
-        value: base64:XQs7EMdvY9yJP3Gp7zDuQsrPMRV/E+JJeHbYEWcYCnA=
+        value: "base64:XQs7EMdvY9yJP3Gp7zDuQsrPMRV/E+JJeHbYEWcYCnA="
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
         value: "false"
-      - key: NODE_VERSION
-        value: "20"
