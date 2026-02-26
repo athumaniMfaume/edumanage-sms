@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     && docker-php-ext-install pdo pdo_pgsql
 
-# 2. Correctly Install Node.js 20 using the new NodeSource method
+# 2. THE FIX: Install Node.js 20 using the official stable method
 RUN mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://deb.nodesource.com | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
@@ -35,6 +35,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
 # 6. Build Frontend Assets (Client + SSR)
+# We use build:ssr because your vite.config.js has an SSR entry
 RUN npm install
 RUN npm run build:ssr
 
