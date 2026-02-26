@@ -1,7 +1,7 @@
 # Use PHP 8.2 with Apache
 FROM php:8.2-apache
 
-# Set non-interactive mode for apt
+# Set non-interactive mode
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 1. Install System Dependencies & PHP Postgres Driver
@@ -11,14 +11,11 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
-    gnupg \
     && docker-php-ext-install pdo pdo_pgsql
 
-# 2. THE FIX: Install Node.js 20 using the official stable method
-RUN mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://deb.nodesource.com | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
-    && apt-get update && apt-get install -y nodejs
+# 2. STABLE NODE.JS INSTALL (The Fix)
+RUN curl -sL https://deb.nodesource.com | bash - \
+    && apt-get install -y nodejs
 
 # 3. Enable Apache mod_rewrite for Laravel
 RUN a2enmod rewrite
@@ -35,7 +32,6 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
 # 6. Build Frontend Assets (Client + SSR)
-# We use build:ssr because your vite.config.js has an SSR entry
 RUN npm install
 RUN npm run build:ssr
 
