@@ -3,4 +3,5 @@ vendor
 .env
 .git
 public/build
+bootstrap/ssr
 storage/*.key
