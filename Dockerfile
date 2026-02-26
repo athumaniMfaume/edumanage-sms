@@ -10,14 +10,14 @@ RUN apt-get update && apt-get install -y \
     curl \
     && docker-php-ext-install pdo pdo_pgsql
 
-# 2. Install Node.js 20 (Required for Vite & Wayfinder)
+# 2. Correctly Install Node.js 20
 RUN curl -fsSL https://deb.nodesource.com | bash - \
     && apt-get install -y nodejs
 
 # 3. Enable Apache mod_rewrite for Laravel
 RUN a2enmod rewrite
 
-# 4. Configure Apache to serve the /public folder
+# 4. Configure Apache to serve /public
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf
 
@@ -29,12 +29,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
 # 6. Build Frontend Assets (Client + SSR)
-# Wayfinder will now find the 'php' binary here!
 RUN npm install
 RUN npm run build:ssr
 
-# 7. Set Permissions for Laravel
+# 7. Set Permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-# 8. Start Command: Migrate the Neon DB and start Apache
+# Start Command
 CMD php artisan migrate --force && apache2-foreground
