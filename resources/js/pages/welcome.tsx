@@ -47,7 +47,7 @@ export default function Welcome({
                         </div>
                         <div className="flex items-center gap-4 text-sm font-medium">
                             {auth.user ? (
-                                <Link href={dashboard()} className="rounded-full bg-primary px-6 py-2 text-white hover:bg-primary/90 transition-colors">
+                                <Link href={dashboard()} className="rounded-full bg-primary px-6 py-2 text-black hover:bg-primary/90 transition-colors">
                                     Go to Dashboard
                                 </Link>
                             ) : (
