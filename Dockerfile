@@ -1,6 +1,9 @@
 # Use PHP 8.2 with Apache
 FROM php:8.2-apache
 
+# Set non-interactive mode for apt
+ENV DEBIAN_FRONTEND=noninteractive
+
 # 1. Install System Dependencies & PHP Postgres Driver
 RUN apt-get update && apt-get install -y \
     libpq-dev \
@@ -8,11 +11,14 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
+    gnupg \
     && docker-php-ext-install pdo pdo_pgsql
 
-# 2. Correctly Install Node.js 20
-RUN curl -fsSL https://deb.nodesource.com | bash - \
-    && apt-get install -y nodejs
+# 2. Correctly Install Node.js 20 using the new NodeSource method
+RUN mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+    && apt-get update && apt-get install -y nodejs
 
 # 3. Enable Apache mod_rewrite for Laravel
 RUN a2enmod rewrite
